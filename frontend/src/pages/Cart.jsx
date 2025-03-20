@@ -1,5 +1,5 @@
 import { formateaNumero } from '../utils/utiles.js'
-
+import Swal from 'sweetalert2'
 import { useContext } from 'react'
 import { CartContext } from '../store/CartContext.jsx'
 import { UserContext } from '../store/UserContext.jsx'
@@ -10,6 +10,41 @@ const Cart = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    pagar(token, cartItems)
+
+    Swal.fire({
+      title: 'Listo!',
+      text: 'Su pago se efectuó correctamente.',
+      icon: 'success'
+    })
+  }
+
+  const pagar = async (token, cartItems) => {
+    try {
+      await fetch('http://localhost:5000/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          cart: cartItems
+        })
+      })
+
+      Swal.fire({
+        title: '¡Pago exitoso!',
+        text: 'Carrito ingresado correctamente.',
+        icon: 'success'
+      })
+    } catch (error) {
+      console.error('Error al pagar:', error)
+      Swal.fire({
+        title: 'Error!',
+        text: 'Hubo un problema al procesar el pago.',
+        icon: 'error'
+      })
+    }
   }
 
   return (
