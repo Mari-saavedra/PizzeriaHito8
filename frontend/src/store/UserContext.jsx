@@ -16,10 +16,8 @@ const UserProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const URL = 'http://localhost:5000/api/auth/login'
-      const payload = { email, password }
+      const response = await axios.post('http://localhost:5000/api/auth/login', { email, password })
 
-      const response = await axios.post(URL, payload)
       setToken(response.data.token)
       setUser(response.data.user)
 

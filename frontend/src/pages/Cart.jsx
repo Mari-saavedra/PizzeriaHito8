@@ -3,45 +3,46 @@ import Swal from 'sweetalert2'
 import { useContext } from 'react'
 import { CartContext } from '../store/CartContext.jsx'
 import { UserContext } from '../store/UserContext.jsx'
+import axios from 'axios'
 
 const Cart = () => {
   const { cartItems, total, handleSumar, handleRestar } = useContext(CartContext)
   const { token } = useContext(UserContext)
 
+  console.log(token)
+
   const handleSubmit = (e) => {
     e.preventDefault()
-    pagar(token, cartItems)
-
-    Swal.fire({
-      title: 'Listo!',
-      text: 'Su pago se efectuó correctamente.',
-      icon: 'success'
-    })
   }
 
   const pagar = async (token, cartItems) => {
-    try {
-      await fetch('http://localhost:5000/api/checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          cart: cartItems
-        })
-      })
+    if (total > 0) {
+      try {
+        await axios.post('http://localhost:5000/api/checkouts',
 
-      Swal.fire({
-        title: '¡Pago exitoso!',
-        text: 'Carrito ingresado correctamente.',
-        icon: 'success'
-      })
-    } catch (error) {
-      console.error('Error al pagar:', error)
+          { cart: cartItems },
+          { headers: { Authorization: `Bearer ${token}` } }
+
+        )
+
+        Swal.fire({
+          title: '¡Pago exitoso!',
+          text: 'Carrito ingresado correctamente.',
+          icon: 'success'
+        })
+      } catch (error) {
+        console.error('Carrito-Error al pagar:', error)
+
+        Swal.fire({
+          title: 'Error!',
+          text: 'Hubo un problema al procesar el pago.',
+          icon: 'error'
+        })
+      }
+    } else {
       Swal.fire({
         title: 'Error!',
-        text: 'Hubo un problema al procesar el pago.',
+        text: 'Carrito vacío',
         icon: 'error'
       })
     }
@@ -100,8 +101,8 @@ const Cart = () => {
 
           <div className='d-flex flex-column'>
             <button
-              type='submit'
               className='btn btn-dark' style={{ width: '90px', height: '45px', fontSize: '15px' }}
+              onClick={() => pagar(token, cartItems)}
               disabled={!token}
             >Pagar
             </button>
