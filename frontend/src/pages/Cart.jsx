@@ -4,12 +4,11 @@ import { useContext } from 'react'
 import { CartContext } from '../store/CartContext.jsx'
 import { UserContext } from '../store/UserContext.jsx'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 const Cart = () => {
-  const { cartItems, total, handleSumar, handleRestar } = useContext(CartContext)
+  const { cartItems, total, handleSumar, handleRestar, limpiaCart } = useContext(CartContext)
   const { token } = useContext(UserContext)
-
-  console.log(token)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -30,6 +29,7 @@ const Cart = () => {
           text: 'Carrito ingresado correctamente.',
           icon: 'success'
         })
+        limpiaCart()
       } catch (error) {
         console.error('Carrito-Error al pagar:', error)
 
